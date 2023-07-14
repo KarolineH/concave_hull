@@ -95,7 +95,7 @@ def concave_hull_2d(points, tN=1):
         kept = [pair for pair in kept_edges if edge[0] in pair or edge[1] in pair]
         [neighbour_edges.append(el) for el in to_do if len(el) > 0]
         [neighbour_edges.append(el) for el in kept if len(el) > 0]
-        neighbour_points = np.setdiff1d(np.unique(neighbour_edges), np.unique(edge)) # these are points with which the two current edge vertices share another edge
+        #neighbour_points = np.setdiff1d(np.unique(neighbour_edges), np.unique(edge)) # these are points with which the two current edge vertices share another edge
 
         # Find the closest 'inner' (i.e. currently not used for any edges) point to the current edge
         used_points = np.union1d(np.unique(np.asarray(edge_deque, dtype=np.int32).flatten()), np.unique(np.asarray(kept_edges, dtype=np.int32).flatten()))
