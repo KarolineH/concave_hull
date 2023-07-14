@@ -71,16 +71,16 @@ def dist_points_to_line(points, e1, e2):
     d=abs(np.cross(e2-e1,points-e1)/np.linalg.norm(e2-e1))
     return d
 
-def concave_hull_2d(points, N=1):
+def concave_hull_2d(points, tN=1):
     '''
     Computes the concave hull of a set of points in 2D
     Inputs:
         - points: a numpy array of 2D coordinates, shape(n,2)
-        - N: the threshold value which determines how tightly the hull is fit to the points.
+        - N: the threshold value which determines how tightly the hull is fit to the points. "valid range of N falls in [0, 5]" (Park and Oh, 2012)
     Returns:
         - kept_edges: a collections.deque of edges, shape(m,2), in which each pair of indices represents an edge between two points
     '''
-    tri = Delaunay(point_set) # Compute the Delaunay triangulation of the points
+    tri = Delaunay(points) # Compute the Delaunay triangulation of the points
     edges = tri.convex_hull # Find the edges of the convex hull
     edge_deque = deque([sorted(edge) for edge in edges])
     kept_edges = deque([])
@@ -116,14 +116,14 @@ def concave_hull_2d(points, N=1):
             # If the closest candidate is closer to a neighbour, we should potentially reexamine this edge later once neighbouring edges have been 'dug' sufficiently.
             closest_to_farthest = np.argsort(d)
             p = closest_to_farthest[0]
-            if d[p] <= neighbour_dist_1[p] and d[p] <= neighbour_dist_2[p]: # "[candidate point] should not closer to neighbor edges" (p. 5) 
+            if d[p] < neighbour_dist_1[p] and d[p] < neighbour_dist_2[p]: # "[candidate point] should not closer to neighbor edges" (p. 5)
                 candidate_index = inner_points[p]
                 candidate_coordinate = points[candidate_index]
 
                 # If there is a fitting candidate point, evaluate against the N parameter
                 edge_length = np.linalg.norm(points[edge])
                 decision_distance = min(np.linalg.norm(candidate_coordinate - points[edge[0]]), np.linalg.norm(candidate_coordinate - points[edge[1]]))
-                if edge_length/decision_distance > N: # decision on digging process
+                if edge_length/decision_distance > tN: # decision on digging process
                     # dig!
                     edge_deque.append(sorted([candidate_index, edge[0]]))
                     edge_deque.append(sorted([candidate_index, edge[1]]))
@@ -143,9 +143,9 @@ def concave_hull_2d(points, N=1):
 if __name__ == "__main__":
     # To test the 2d concave hull algorithm
     # specify the 'threshold value' N
-    N = 0.1
+    threshold_N = 3
     # generate random 2d pointset
     point_set = np.random.rand(100,2)
-    concave_hull = concave_hull_2d(point_set, N=N)
+    concave_hull = concave_hull_2d(point_set, tN=threshold_N)
     # and plot the result
     plot(point_set, concave_hull)
