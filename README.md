@@ -6,3 +6,5 @@
 ---
 
 Note that this implementation is intended for research and has not (yet) been optimised for computational cost or speed.
+
+Tested using Python 3.8.10, matplotlib==3.6.2, numpy==1.23.4, scipy==1.10.0
